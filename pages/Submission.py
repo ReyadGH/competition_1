@@ -4,7 +4,6 @@ import os
 from datetime import datetime
 from sklearn.metrics import f1_score
 import pytz
-from dotenv import load_dotenv
 
 # set up the page configuration
 st.set_page_config(page_title="Submit Your Predictions", page_icon="📤")
