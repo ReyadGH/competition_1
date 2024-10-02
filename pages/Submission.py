@@ -2,126 +2,96 @@ import streamlit as st
 import pandas as pd
 import os
 from datetime import datetime
-import pytz  # For time zone conversion
+from sklearn.metrics import f1_score
+import pytz
+from dotenv import load_dotenv
 
-# Set page configuration
-st.set_page_config(page_title="Submit Your Targets", page_icon="📤")
+# set up the page configuration
+st.set_page_config(page_title="Submit Your Predictions", page_icon="📤")
 
-# Directory to save the submissions
 SUBMISSIONS_DIR = os.path.join(".", "data", "submissions")
 if not os.path.exists(SUBMISSIONS_DIR):
-    os.makedirs(SUBMISSIONS_DIR)  # Create the folder if it doesn't exist
+    os.makedirs(SUBMISSIONS_DIR)
 
-# Saudi Arabian time zone (UTC+3)
+# saudi time zone (utc+3)
 SAUDI_TZ = pytz.timezone("Asia/Riyadh")
 
-# Secret array used for validation/scoring
-SECRET_ARRAY = [75, 90, 85, 60, 95]
+y_true = st.secrets["Y_TRUE"]
 
-# Fixed length of the dataframe required
-REQUIRED_LENGTH = 5  # You can adjust this value
-
-
-def calculate_score(target: int, secret_array: list[int]) -> int:
-    """
-    Calculate the score based on the target and the secret array.
-
-    target: int
-    secret_array: list[int]
-    returns: int
-    description: computes the score based on the secret array logic
-    """
-    score = sum(1 for x in secret_array if target >= x)
-    return (score / len(secret_array)) * 100
+REQUIRED_LENGTH = len(y_true)
 
 
 def process_submission(name: str, file) -> None:
     """
-    Process the CSV file and add validated scores to the leaderboard.
+    process the uploaded file, validate it, and calculate the f1 score.
 
     name: str
     file: UploadedFile
-    description: validates the file, saves submission, and logs the result
     """
     try:
-        # Read the uploaded CSV file
+        # load the submitted csv file
         data = pd.read_csv(file)
 
-        # Check if the CSV contains the required headers and length
-        if (
-            list(data.columns)
-            == [
-                "index",
-                "target",
-            ]
-            and len(data) == REQUIRED_LENGTH
-        ):
-            total_score = 0
-            for index, row in data.iterrows():
-                target = row["target"]
-                score = calculate_score(target, SECRET_ARRAY)
-                total_score += score
+        # ensure proper format and row count
+        if list(data.columns) == ["index", "target"] and len(data) == REQUIRED_LENGTH:
+            y_pred = data[
+                "target"
+            ]  # we're now using the 'target' column as the predictions
 
-            # Calculate average score
-            average_score = total_score / REQUIRED_LENGTH
+            # calculate the f1 score using weighted average to handle unbalanced data
+            score = f1_score(y_true, y_pred, average="weighted")
 
-            # Get current time in Saudi Arabian time zone
             saudi_time = datetime.now(SAUDI_TZ).strftime("%Y-%m-%d_%H-%M-%S")
             submission_filename = f"{name}_{saudi_time}.csv"
             submission_filepath = os.path.join(SUBMISSIONS_DIR, submission_filename)
 
+            # save submission with score and time
             submission_data = pd.DataFrame(
                 {
                     "Name": [name],
-                    "Entries": [REQUIRED_LENGTH],
-                    "Score": [average_score],
+                    "target": [list(y_pred)],
+                    "Score": [score],
                     "Submission Time": [saudi_time],
                 }
             )
             submission_data.to_csv(submission_filepath, index=False)
 
             st.success(
-                f"Thank you {name}, your submission has been processed with an average score of {average_score:.2f}!"
+                f"thanks {name}, your submission has been processed! your f1 score is {score:.2f}."
             )
         else:
             st.error(
-                f"Invalid CSV format. Ensure the file contains 'index' and 'target' columns and exactly {REQUIRED_LENGTH} rows."
+                f"invalid file format. we need columns 'index' and 'target' with exactly {REQUIRED_LENGTH} rows."
             )
     except Exception as e:
-        st.error(f"Error processing file: {e}")
+        st.error(f"error processing file: {e}")
 
 
 def submission_page() -> None:
-    """Displays the submission form for students to upload their names and targets"""
-    st.title("Submit Your Targets")
+    """
+    handles the submission form, where users enter their name and upload a csv.
+    """
+    st.title("submit your predictions")
 
-    # Explanatory text
     st.write("""
-        Please follow the instructions below to submit your targets:
+        here's what you need to do:
         
-        1. Enter your name.
-        2. Upload a CSV file with the following format:
-           - The CSV file must contain exactly two columns: **index** and **target**.
-           - The file must contain exactly 5 rows (you can change this requirement).
+        1. enter your name.
+        2. upload a csv with two columns: **index** and **y_pred**.
+        3. the file should have exactly the right number of rows to match the true values.
         
-        The system will validate your file and calculate your score based on the targets provided.
+        we'll calculate your f1 score once you hit submit!
     """)
 
-    # Input for name
-    name = st.text_input("Enter your name")
+    name = st.text_input("enter your name")
+    uploaded_file = st.file_uploader("choose your csv file", type=["csv"])
 
-    # CSV file uploader
-    uploaded_file = st.file_uploader("Choose a CSV file", type=["csv"])
-
-    # Submit button
-    if st.button("Submit"):
+    if st.button("submit"):
         if name and uploaded_file:
             process_submission(name, uploaded_file)
         else:
-            st.error(
-                "Please make sure you have entered your name and uploaded a valid CSV file."
-            )
+            st.error("please provide both your name and a valid file!")
 
 
-# Call the submission page function
+# run the submission page
 submission_page()
