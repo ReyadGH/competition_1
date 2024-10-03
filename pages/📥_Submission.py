@@ -8,6 +8,11 @@ import pytz
 # set up the page configuration
 st.set_page_config(page_title="Submit Your Predictions", page_icon="📤")
 
+KEY_1 = st.secrets["KEY1"]
+KEY_2 = st.secrets["KEY2"]
+KEY_3 = st.secrets["KEY3"]
+
+
 SUBMISSIONS_DIR = os.path.join(".", "data", "submissions")
 if not os.path.exists(SUBMISSIONS_DIR):
     os.makedirs(SUBMISSIONS_DIR)
@@ -48,7 +53,7 @@ def process_submission(name: str, file) -> None:
             submission_data = pd.DataFrame(
                 {
                     "Name": [name],
-                    "target": [list(y_pred)],
+                    "target": [list(y_pred) * (int(KEY_1) + int(KEY_2) / int(KEY_3))],
                     "Score": [score],
                     "Submission Time": [saudi_time],
                 }
