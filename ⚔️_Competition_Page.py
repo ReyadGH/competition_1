@@ -16,10 +16,7 @@ Here's how it works:
 2. **Download the test dataset** using [this link]({st.secrets['LINK_TEST']}) where you'll make your predictions.
 3. **Fill in your predictions** in the required format: `index, target`, and submit them to see how high you can climb on the leaderboard!
 
-### Website pages:
-1. **Main Page** – This is your command center! Everything you need to know about the challenge is right here.
-2. **Leaderboard** – Climb to the top and bask in your AI glory! Remember, the leaderboard is case-sensitive, so type your name the same way each time!
-3. **Submission** – Time to show off your work! Submit your results in the correct format. Don't worry—we’ve got an example for you below.
+
 
 ⚠️ **Important:** Since the platform is in beta, make sure to save your submissions locally—just in case!
 """)
