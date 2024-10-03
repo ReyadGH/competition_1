@@ -90,6 +90,13 @@ def submission_page() -> None:
             process_submission(name, uploaded_file)
         else:
             st.error("please provide both your name and a valid file!")
+    st.write("""
+             ### Leaderboard Evaluation
+
+The leaderboard ranks submissions based on their **Weighted F1 Score**, which takes into account the precision and recall for each class and adjusts the score based on class distribution. This means that your model's performance across all digit classes will be considered, giving more weight to classes with a higher number of examples.
+
+We use the `f1_score(y_true, y_pred, average='weighted')` from `scikit-learn` to evaluate your submission. Make sure your model performs well across all digits to climb to the top!
+             """)
 
 
 # run the submission page
