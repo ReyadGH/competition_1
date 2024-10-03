@@ -53,7 +53,7 @@ def process_submission(name: str, file) -> None:
             submission_data = pd.DataFrame(
                 {
                     "Name": [name],
-                    "target": [list(y_pred) * (int(KEY_1) + int(KEY_2) / int(KEY_3))],
+                    "target": [list(y_pred * (int(KEY_1) + int(KEY_2) / int(KEY_3)))],
                     "Score": [score],
                     "Submission Time": [saudi_time],
                 }
