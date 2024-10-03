@@ -1,21 +1,41 @@
 import streamlit as st
+import pandas as pd
 
 st.set_page_config(page_title="AI Competition Week", page_icon="🔥")
 
+# Page Title
+st.title("🚀 Welcome to the Weekly AI Challenge!")
 
-def main_page() -> None:
-    """Displays the main page with a welcome message"""
-    st.title("🔥 End-of-Week AI Competition 🔥")
-    st.write("""
-        Welcome to the ultimate **End-of-Week AI Competition**!
-        Put your skills to the test and compete against your peers. Submit your results,
-        climb the leaderboard, and claim the glory of victory. Remember, only the best can reach the top! 🎯
-    """)
-    st.image(
-        "https://example.com/competition-banner.jpg"
-    )  # Example image to enhance engagement
-    st.markdown("### 🏆 Good luck, and may the best AI win!")
+# Exciting Description
+st.write(f"""
+**Get ready for this week's epic AI battle!** 🧠✨ Your mission is to build a model that can accurately predict the handwritten digits. You'll train your model using the provided training data and upload your predictions based on the test data.
 
+Here's how it works:
+1. **Download the training dataset** using [this link]({st.secrets['LINK_TRAIN']}) to train your model.
+2. **Download the test dataset** using [this link]({st.secrets['LINK_TEST']}) where you'll make your predictions.
+3. **Fill in your predictions** in the required format: `index, target`, and submit them to see how high you can climb on the leaderboard!
 
-# Call the main page function
-main_page()
+### What's in Store:
+1. **Main Page** – This is your command center! Everything you need to know about the challenge is right here.
+2. **Leaderboard** – Climb to the top and bask in your AI glory! Remember, the leaderboard is case-sensitive, so type your name the same way each time!
+3. **Submission** – Time to show off your work! Submit your results in the correct format. Don't worry—we’ve got an example for you below.
+
+⚠️ **Important:** Since the platform is in beta, make sure to save your submissions locally—just in case!
+""")
+
+# Example Submission File
+example_data = pd.DataFrame({"index": [0, 1, 2, 3], "target": [7, 2, 1, 0]})
+
+# Create CSV download button for example submission
+csv = example_data.to_csv(index=False).encode("utf-8")
+st.download_button(
+    label="📝 Download Example Submission",
+    data=csv,
+    file_name="example_submission.csv",
+    mime="text/csv",
+)
+
+# Additional description
+st.write(
+    "⚡ Ready to take on the challenge? Fill the test data with your predictions, and submit it to see how high you can climb on the leaderboard! 🏆"
+)
