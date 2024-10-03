@@ -76,7 +76,7 @@ def submission_page() -> None:
         here's what you need to do:
         
         1. enter your name.
-        2. upload a csv with two columns: **index** and **y_pred**.
+        2. upload a csv with two columns: **index** and **target**.
         3. the file should have exactly the right number of rows to match the true values.
         
         we'll calculate your f1 score once you hit submit!
