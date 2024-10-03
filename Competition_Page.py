@@ -3,6 +3,7 @@ import pandas as pd
 
 st.set_page_config(page_title="AI Competition Week", page_icon="🔥")
 
+
 # Page Title
 st.title("🚀 Welcome to the Weekly AI Challenge!")
 
